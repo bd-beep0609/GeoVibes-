@@ -8,8 +8,7 @@ public static class LugaresEndpoints
     public static void MapLugaresEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api")
-                       .WithTags("Lugares")
-                       .WithOpenApi();
+               .WithTags("Lugares");
 
         // GET /api/paises/{paisId}/lugares → GetLugaresPorPaisAsync (200 OK, 404 si el país no existe)
         group.MapGet("/paises/{paisId:int}/lugares", async (

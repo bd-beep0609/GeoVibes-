@@ -9,9 +9,9 @@ public static class PaisesEndpoints
     public static void MapPaisesEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/paises")
-                       .WithTags("Países")
-                       .WithOpenApi();
+               .WithTags("Países");
 
+               
         // GET /api/paises?region={region}&search={text} → GetPaisesAsync (200 OK)
         group.MapGet("/", async (
             [FromQuery] string? region,
