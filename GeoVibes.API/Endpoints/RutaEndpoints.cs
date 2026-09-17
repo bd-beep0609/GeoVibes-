@@ -8,9 +8,8 @@ public static class RutaEndpoints
 {
     public static void MapRutaEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/usuarios")
-                       .WithTags("Ruta")
-                       .WithOpenApi();
+       var group = app.MapGroup("/api/usuarios")
+               .WithTags("Ruta");
 
         // POST /api/usuarios/{usuarioId}/ruta → AgregarVisitaAsync
         group.MapPost("/{usuarioId:int}/ruta", async (

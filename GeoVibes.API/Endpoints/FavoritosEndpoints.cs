@@ -8,9 +8,8 @@ public static class FavoritosEndpoints
 {
     public static void MapFavoritosEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/usuarios")
-                       .WithTags("Favoritos")
-                       .WithOpenApi();
+       var group = app.MapGroup("/api/usuarios")
+               .WithTags("Favoritos");
 
         // POST /api/usuarios/{usuarioId}/favoritos → AgregarFavoritoAsync
         group.MapPost("/{usuarioId:int}/favoritos", async (

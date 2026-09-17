@@ -9,9 +9,8 @@ public static class UsuariosEndpoints
     public static void MapUsuariosEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/usuarios")
-                       .WithTags("Usuarios")
-                       .WithOpenApi();
-
+               .WithTags("Usuarios");
+               
         // POST /api/usuarios/login — RF01: Login
         group.MapPost("/login", async (
             [FromBody] LoginRequest request,
