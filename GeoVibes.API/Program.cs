@@ -22,9 +22,10 @@ builder.Services.AddScoped<ILugarRepository, LugarRepository>();
 
 // ─── Registro de Servicios ────────────────────────────────────────────────────
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IPaisService, PaisService>();
 
 // ─── AutoMapper ───────────────────────────────────────────────────────────────
-builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile));
+builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile));
 
 // ─── Autenticación JWT Bearer ─────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -75,6 +76,7 @@ app.UseAuthorization();
 
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 app.MapUsuariosEndpoints();
+app.MapPaisesEndpoints();
 
 app.Run();
 
