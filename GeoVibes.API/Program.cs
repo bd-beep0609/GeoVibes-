@@ -19,13 +19,15 @@ builder.Services.AddDbContext<GeoVibesContext>(options =>
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IPaisRepository, PaisRepository>();
 builder.Services.AddScoped<ILugarRepository, LugarRepository>();
+builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 
 // ─── Registro de Servicios ────────────────────────────────────────────────────
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IPaisService, PaisService>();
+builder.Services.AddScoped<IFavoritoService, FavoritoService>();
 
 // ─── AutoMapper ───────────────────────────────────────────────────────────────
-builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile));
+builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile), typeof(FavoritoMappingProfile));
 
 // ─── Autenticación JWT Bearer ─────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -77,6 +79,7 @@ app.UseAuthorization();
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 app.MapUsuariosEndpoints();
 app.MapPaisesEndpoints();
+app.MapFavoritosEndpoints();
 
 app.Run();
 
