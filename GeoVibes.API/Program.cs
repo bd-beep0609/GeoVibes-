@@ -27,9 +27,10 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IPaisService, PaisService>();
 builder.Services.AddScoped<IFavoritoService, FavoritoService>();
 builder.Services.AddScoped<IRutaService, RutaService>();
+builder.Services.AddScoped<ILugarService, LugarService>();
 
 // ─── AutoMapper ───────────────────────────────────────────────────────────────
-builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile), typeof(FavoritoMappingProfile), typeof(RutaMappingProfile));
+builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile), typeof(FavoritoMappingProfile), typeof(RutaMappingProfile), typeof(LugarMappingProfile));
 
 // ─── Autenticación JWT Bearer ─────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -83,6 +84,7 @@ app.MapUsuariosEndpoints();
 app.MapPaisesEndpoints();
 app.MapFavoritosEndpoints();
 app.MapRutaEndpoints();
+app.MapLugaresEndpoints();
 
 app.Run();
 

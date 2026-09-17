@@ -41,6 +41,16 @@ public class LugarRepository : ILugarRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<CategoriaLugar>> GetCategoriasAsync()
+    {
+        return await _context.CategoriasLugar.ToListAsync();
+    }
+
+    public async Task<IEnumerable<MotivoLugar>> GetMotivosAsync()
+    {
+        return await _context.MotivosLugar.ToListAsync();
+    }
+
     public async Task AddAsync(LugarTuristico lugar)
     {
         await _context.LugaresTuristicos.AddAsync(lugar);
