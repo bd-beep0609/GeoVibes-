@@ -1,26 +1,67 @@
+using System.Text;
+using GeoVibes.API.Endpoints;
+using GeoVibes.API.Mappings;
 using GeoVibes.Core.Interfaces;
+using GeoVibes.Core.Services;
 using GeoVibes.Infrastructure.Data;
 using GeoVibes.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de Entity Framework Core con SQL Server
+// ─── Entity Framework Core con SQL Server ────────────────────────────────────
 builder.Services.AddDbContext<GeoVibesContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Registro de Repositorios (Inyección de Dependencias)
+// ─── Registro de Repositorios ─────────────────────────────────────────────────
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IPaisRepository, PaisRepository>();
 builder.Services.AddScoped<ILugarRepository, LugarRepository>();
 
-// Configuración de OpenAPI / Swagger
+// ─── Registro de Servicios ────────────────────────────────────────────────────
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+// ─── AutoMapper ───────────────────────────────────────────────────────────────
+builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile));
+
+// ─── Autenticación JWT Bearer ─────────────────────────────────────────────────
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("La clave JWT no está configurada.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+            ValidAudience            = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ─── OpenAPI / Swagger ────────────────────────────────────────────────────────
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new()
+    {
+        Title       = "GeoVibes API",
+        Version     = "v1",
+        Description = "API REST para la aplicación móvil GeoVibes — exploración y turismo por América."
+    });
+});
 
 var app = builder.Build();
 
-// Configuración del pipeline HTTP
+// ─── Pipeline HTTP ────────────────────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -29,4 +70,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// ─── Endpoints ────────────────────────────────────────────────────────────────
+app.MapUsuariosEndpoints();
+
 app.Run();
+
