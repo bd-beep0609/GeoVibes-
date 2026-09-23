@@ -8,6 +8,7 @@ using GeoVibes.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,12 @@ builder.Services.AddScoped<IRutaService, RutaService>();
 builder.Services.AddScoped<ILugarService, LugarService>();
 
 // ─── AutoMapper ───────────────────────────────────────────────────────────────
-builder.Services.AddAutoMapper(typeof(UsuarioMappingProfile), typeof(PaisMappingProfile), typeof(FavoritoMappingProfile), typeof(RutaMappingProfile), typeof(LugarMappingProfile));
+builder.Services.AddAutoMapper(
+    typeof(UsuarioMappingProfile),
+    typeof(PaisMappingProfile),
+    typeof(FavoritoMappingProfile),
+    typeof(RutaMappingProfile),
+    typeof(LugarMappingProfile));
 
 // ─── Autenticación JWT Bearer ─────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -57,11 +63,27 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new()
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title       = "GeoVibes API",
         Version     = "v1",
         Description = "API REST para la aplicación móvil GeoVibes — exploración y turismo por América."
+    });
+
+    // Configuración de seguridad JWT en Swagger (Microsoft.OpenApi 2.x)
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name         = "Authorization",
+        Type         = SecuritySchemeType.Http,
+        Scheme       = "Bearer",
+        BearerFormat = "JWT",
+        In           = ParameterLocation.Header,
+        Description  = "Ingresa el token JWT con el prefijo 'Bearer'. Ejemplo: Bearer eyJhbGciOi..."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
 
@@ -87,4 +109,3 @@ app.MapRutaEndpoints();
 app.MapLugaresEndpoints();
 
 app.Run();
-
