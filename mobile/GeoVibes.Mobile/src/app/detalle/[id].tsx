@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getDetallePais } from '../../services/paises';
 import { Pais } from '../../types/Pais';
 import { agregarFavorito, eliminarFavorito, getFavoritos } from '../../services/favoritos';
@@ -79,75 +80,91 @@ export default function DetalleScreen() {
 
   if (!pais) return null;
 
+  const gradientColors: [string, string, string] = [
+    pais.colorPrimario || '#0033A0',
+    '#FFFFFF',
+    pais.colorSecundario || pais.colorPrimario || '#001A52',
+  ];
+
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: pais.colorPrimario || '#0033A0' }]}
-      contentContainerStyle={styles.content}
-    >
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Volver</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.favoriteButton} onPress={toggleFavorito}>
-        <Text style={styles.favoriteText}>{isFavorite ? '❤️' : '🤍'}</Text>
-      </TouchableOpacity>
-
-
-      <View style={styles.header}>
-        <Text style={styles.emoji}>🐦</Text>
-        <Text style={styles.title}>{pais.nombre}</Text>
-        <Text style={styles.subtitle}>{pais.descripcionBreve}</Text>
-      </View>
-
-      <View style={styles.cardsContainer}>
-        <View style={styles.card}>
-          <Text style={styles.cardIcon}>🏛️</Text>
-          <Text style={styles.cardLabel}>Capital</Text>
-          <Text style={styles.cardValue}>{pais.capital}</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardIcon}>💰</Text>
-          <Text style={styles.cardLabel}>Moneda</Text>
-          <Text style={styles.cardValue}>{pais.moneda}</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardIcon}>🐦</Text>
-          <Text style={styles.cardLabel}>Ave</Text>
-          <Text style={styles.cardValue}>{pais.aveNacional}</Text>
-        </View>
-      </View>
-
-      <View style={styles.culturaSection}>
-        <Text style={styles.culturaTitle}>Cultura</Text>
-        <View style={styles.culturaCard}>
-          <Text style={styles.culturaItem}>🍽️ {pais.cultura?.gastronomia}</Text>
-          <Text style={styles.culturaItem}>🎵 {pais.cultura?.musica}</Text>
-          <Text style={styles.culturaItem}>🏛️ {pais.cultura?.patrimonio}</Text>
-          <Text style={styles.culturaItem}>💡 {pais.cultura?.datoCurioso}</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.explorarButton}>
-        <Text style={styles.explorarText}>¡Explorar {pais.nombre}! 🗺️</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.rutaButton, isInRuta && styles.rutaButtonVisited]}
-        onPress={handleAgregarRuta}
-        disabled={rutaLoading}
+    <LinearGradient colors={gradientColors} style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
       >
-        <Text style={styles.rutaText}>
-          {rutaLoading ? '...' : isInRuta ? '✅ En Mi Ruta' : '📍 Agregar a Mi Ruta'}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backText}>← Volver</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.favoriteButton} onPress={toggleFavorito}>
+          <Text style={styles.favoriteText}>{isFavorite ? '❤️' : '🤍'}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.header}>
+          {pais.aveImagenUrl ? (
+            <Image source={{ uri: pais.aveImagenUrl }} style={styles.aveImage} resizeMode="cover" />
+          ) : (
+            <Text style={styles.emoji}>🐦</Text>
+          )}
+          <Text style={styles.title}>{pais.nombre}</Text>
+          <Text style={styles.subtitle}>{pais.descripcionBreve}</Text>
+        </View>
+
+        <View style={styles.cardsContainer}>
+          <View style={styles.card}>
+            <Text style={styles.cardIcon}>🏛️</Text>
+            <Text style={styles.cardLabel}>Capital</Text>
+            <Text style={styles.cardValue}>{pais.capital}</Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardIcon}>💰</Text>
+            <Text style={styles.cardLabel}>Moneda</Text>
+            <Text style={styles.cardValue}>{pais.moneda}</Text>
+          </View>
+
+          <View style={styles.card}>
+            {pais.aveImagenUrl ? (
+              <Image source={{ uri: pais.aveImagenUrl }} style={styles.cardAveImage} resizeMode="contain" />
+            ) : (
+              <Text style={styles.cardIcon}>🐦</Text>
+            )}
+            <Text style={styles.cardLabel}>Ave</Text>
+            <Text style={styles.cardValue}>{pais.aveNacional}</Text>
+          </View>
+        </View>
+
+        <View style={styles.culturaSection}>
+          <Text style={styles.culturaTitle}>Cultura</Text>
+          <View style={styles.culturaCard}>
+            <Text style={styles.culturaItem}>🍽️ {pais.cultura?.gastronomia}</Text>
+            <Text style={styles.culturaItem}>🎵 {pais.cultura?.musica}</Text>
+            <Text style={styles.culturaItem}>🏛️ {pais.cultura?.patrimonio}</Text>
+            <Text style={styles.culturaItem}>💡 {pais.cultura?.datoCurioso}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.explorarButton}>
+          <Text style={styles.explorarText}>¡Explorar {pais.nombre}! 🗺️</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.rutaButton, isInRuta && styles.rutaButtonVisited]}
+          onPress={handleAgregarRuta}
+          disabled={rutaLoading}
+        >
+          <Text style={styles.rutaText}>
+            {rutaLoading ? '...' : isInRuta ? '✅ En Mi Ruta' : '📍 Agregar a Mi Ruta'}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  scrollView: { flex: 1 },
   content: { padding: 20, paddingTop: 60 },
   backButton: { position: 'absolute', top: 50, left: 20, zIndex: 10 },
   backText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' },
@@ -155,6 +172,20 @@ const styles = StyleSheet.create({
   favoriteText: { fontSize: 24 },
   header: { alignItems: 'center', marginBottom: 30 },
   emoji: { fontSize: 80, marginBottom: 10 },
+  aveImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  cardAveImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginBottom: 5,
+  },
   title: { fontSize: 40, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center' },
   subtitle: { fontSize: 16, color: '#FFFFFF', textAlign: 'center', marginTop: 10 },
   cardsContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },

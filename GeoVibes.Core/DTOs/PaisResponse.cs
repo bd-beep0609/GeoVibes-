@@ -13,6 +13,7 @@ public class PaisResponse
     public string AveNacional { get; set; } = string.Empty;
     public string BanderaUrl { get; set; } = string.Empty;
     public string? AnimacionAveUrl { get; set; }
+    public string? AveImagenUrl { get; set; }
     public string ColorPrimario { get; set; } = string.Empty;
     public string ColorSecundario { get; set; } = string.Empty;
     public string? DescripcionBreve { get; set; }

@@ -8,8 +8,11 @@ export interface Pais {
   moneda?: string;
   idioma?: string;
   colorPrimario?: string;
+  colorSecundario?: string;
   descripcionBreve?: string;
   aveNacional?: string;
+  aveImagenUrl?: string;
+  animacionAveUrl?: string;
   cultura?: {
     gastronomia?: string;
     musica?: string;

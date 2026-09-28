@@ -9,7 +9,7 @@ export const getPaises = async (region?: string, search?: string): Promise<Pais[
   if (search) {
     params.search = search;
   }
-  
+
   const response = await api.get('/api/paises', { params });
   return response.data;
 };
