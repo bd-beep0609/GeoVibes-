@@ -52,6 +52,10 @@ public class PaisConfiguration : IEntityTypeConfiguration<Pais>
             .HasMaxLength(500)
             .IsRequired(false);
 
+        builder.Property(p => p.AveImagenUrl)
+            .HasMaxLength(500)
+            .IsRequired(false);
+
         builder.Property(p => p.ColorPrimario)
             .HasColumnType("char(7)")
             .IsRequired();
