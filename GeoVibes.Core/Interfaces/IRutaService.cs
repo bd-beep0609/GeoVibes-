@@ -5,5 +5,6 @@ namespace GeoVibes.Core.Interfaces;
 public interface IRutaService
 {
     Task<bool> AgregarVisitaAsync(int usuarioId, int paisId);
+    Task<bool> EliminarVisitaAsync(int usuarioId, int paisId);
     Task<List<RutaResponse>> GetRutaAsync(int usuarioId);
 }

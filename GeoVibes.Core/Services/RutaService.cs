@@ -46,6 +46,15 @@ public class RutaService : IRutaService
         return await _rutaRepository.SaveChangesAsync();
     }
 
+    public async Task<bool> EliminarVisitaAsync(int usuarioId, int paisId)
+    {
+        var ruta = await _rutaRepository.GetByUsuarioYPaisAsync(usuarioId, paisId);
+        if (ruta == null) return false;
+
+        await _rutaRepository.DeleteAsync(ruta);
+        return await _rutaRepository.SaveChangesAsync();
+    }
+
     public async Task<List<RutaResponse>> GetRutaAsync(int usuarioId)
     {
         var rutas = await _rutaRepository.GetAllByUsuarioIdAsync(usuarioId);

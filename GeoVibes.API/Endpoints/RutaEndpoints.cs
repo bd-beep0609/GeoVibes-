@@ -30,6 +30,25 @@ public static class RutaEndpoints
         .Produces(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status409Conflict);
 
+        // DELETE /api/usuarios/{usuarioId}/ruta/{paisId} → EliminarVisitaAsync
+        group.MapDelete("/{usuarioId:int}/ruta/{paisId:int}", async (
+            int usuarioId,
+            int paisId,
+            IRutaService rutaService) =>
+        {
+            var success = await rutaService.EliminarVisitaAsync(usuarioId, paisId);
+            if (!success)
+            {
+                return Results.NotFound(new { mensaje = "El país no existe en la ruta del usuario." });
+            }
+
+            return Results.NoContent();
+        })
+        .WithSummary("Eliminar un país de Mi Ruta")
+        .WithDescription("Elimina un país de la ruta de exploración del usuario.")
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status404NotFound);
+
         // GET /api/usuarios/{usuarioId}/ruta → GetRutaAsync
         group.MapGet("/{usuarioId:int}/ruta", async (
             int usuarioId,
