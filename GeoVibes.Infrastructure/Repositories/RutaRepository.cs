@@ -19,6 +19,11 @@ public class RutaRepository : IRutaRepository
         return await _context.RutaUsuario.AnyAsync(r => r.UsuarioId == usuarioId && r.PaisId == paisId);
     }
 
+    public async Task<RutaUsuario?> GetByUsuarioYPaisAsync(int usuarioId, int paisId)
+    {
+        return await _context.RutaUsuario.FirstOrDefaultAsync(r => r.UsuarioId == usuarioId && r.PaisId == paisId);
+    }
+
     public async Task<List<RutaUsuario>> GetAllByUsuarioIdAsync(int usuarioId)
     {
         return await _context.RutaUsuario
@@ -30,6 +35,12 @@ public class RutaRepository : IRutaRepository
     public async Task AddAsync(RutaUsuario rutaUsuario)
     {
         await _context.RutaUsuario.AddAsync(rutaUsuario);
+    }
+
+    public Task DeleteAsync(RutaUsuario ruta)
+    {
+        _context.RutaUsuario.Remove(ruta);
+        return Task.CompletedTask;
     }
 
     public async Task<bool> SaveChangesAsync()
