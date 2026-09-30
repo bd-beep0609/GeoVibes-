@@ -1,7 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useAjustes } from '../../context/AjustesContext';
 
 export default function TabLayout() {
+  const { t } = useAjustes();
+
   return (
     <Tabs 
       screenOptions={{ 
@@ -25,29 +29,29 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="home" 
         options={{ 
-          title: 'Explorar',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20 }}>🌍</Text>,
+          title: t('explorar'),
+          tabBarIcon: ({ color }) => <FontAwesome5 name="globe-americas" size={20} color={color} />,
         }} 
       />
       <Tabs.Screen 
         name="favoritos" 
         options={{ 
-          title: 'Favoritos',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20 }}>❤️</Text>,
+          title: t('favoritos'),
+          tabBarIcon: ({ color }) => <FontAwesome5 name="heart" size={20} color={color} />,
         }} 
       />
       <Tabs.Screen 
         name="mi-ruta" 
         options={{ 
-          title: 'Mi Ruta',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20 }}>📍</Text>,
+          title: t('miRuta'),
+          tabBarIcon: ({ color }) => <FontAwesome5 name="map-marker-alt" size={20} color={color} />,
         }} 
       />
       <Tabs.Screen 
         name="perfil" 
         options={{ 
-          title: 'Perfil',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20 }}>👤</Text>,
+          title: t('perfil'),
+          tabBarIcon: ({ color }) => <FontAwesome5 name="user" size={20} color={color} />,
         }} 
       />
     </Tabs>

@@ -9,12 +9,17 @@ import {
   Image,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { getFavoritos, eliminarFavorito, Favorito } from '../../services/favoritos';
+import { useAjustes } from '../../context/AjustesContext';
+import { traducir } from '../../constants/traduccionesContenido';
 
 export default function FavoritosScreen() {
   const [favoritos, setFavoritos] = useState<Favorito[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t, idioma } = useAjustes();
 
   useFocusEffect(
     useCallback(() => {
@@ -64,7 +69,7 @@ export default function FavoritosScreen() {
         resizeMode="cover"
       />
       <View style={styles.cardInfo}>
-        <Text style={styles.countryName}>{item.paisNombre}</Text>
+        <Text style={styles.countryName}>{traducir(item.paisNombre, idioma)}</Text>
         <Text style={styles.dateText}>
           Agregado el {new Date(item.fechaAgregado).toLocaleDateString()}
         </Text>
@@ -73,16 +78,16 @@ export default function FavoritosScreen() {
         style={styles.deleteButton}
         onPress={() => handleEliminar(item.paisId, item.paisNombre)}
       >
-        <Text style={styles.deleteButtonText}>🗑️</Text>
+        <FontAwesome5 name="trash-alt" size={20} color="#FF3B30" style={styles.deleteButtonText} />
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mis Favoritos</Text>
-        <Text style={styles.subtitle}>Tus lugares guardados</Text>
+        <Text style={styles.title}>{t('misFavoritos')}</Text>
+        <Text style={styles.subtitle}>{t('exploraPaises')}</Text>
       </View>
 
       <View style={styles.listContainer}>
@@ -90,8 +95,8 @@ export default function FavoritosScreen() {
           <ActivityIndicator size="large" color="#FFD700" style={styles.loader} />
         ) : favoritos.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyEmoji}>🗺️</Text>
-            <Text style={styles.emptyText}>Aún no tienes favoritos guardados.</Text>
+            <FontAwesome5 name="map-marked-alt" size={60} color="#666" style={styles.emptyEmoji} />
+            <Text style={styles.emptyText}>{t('noFavoritos')}</Text>
           </View>
         ) : (
           <FlatList
@@ -103,7 +108,7 @@ export default function FavoritosScreen() {
           />
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -7,10 +7,11 @@ import {
   TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform,
-  SafeAreaView,
   Alert,
   ScrollView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { registro } from '../../services/auth';
 
@@ -23,6 +24,8 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = async () => {
     if (!nombreCompleto || !correo || !paisOrigen || !password || !confirmPassword) {
@@ -61,7 +64,7 @@ export default function RegisterScreen() {
 
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
-              <Text style={styles.inputIcon}>👤</Text>
+              <FontAwesome5 name="user" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Nombre completo"
@@ -72,7 +75,7 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputIcon}>✉️</Text>
+              <FontAwesome5 name="envelope" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Correo electrónico"
@@ -85,7 +88,7 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputIcon}>🌎</Text>
+              <FontAwesome5 name="globe-americas" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="País de origen"
@@ -96,27 +99,33 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputIcon}>🔒</Text>
+              <FontAwesome5 name="lock" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Contraseña"
                 placeholderTextColor="#666"
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 value={password}
                 onChangeText={setPassword}
               />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 10 }}>
+                <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="#666" />
+              </TouchableOpacity>
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputIcon}>🔒</Text>
+              <FontAwesome5 name="lock" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Confirmar contraseña"
                 placeholderTextColor="#666"
-                secureTextEntry
+                secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
               />
+              <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={{ padding: 10 }}>
+                <FontAwesome5 name={showConfirmPassword ? "eye-slash" : "eye"} size={20} color="#666" />
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity 

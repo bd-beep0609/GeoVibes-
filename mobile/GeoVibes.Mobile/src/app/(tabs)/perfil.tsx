@@ -4,17 +4,20 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  SafeAreaView,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../services/auth';
+import { useAjustes } from '../../context/AjustesContext';
 
 export default function PerfilScreen() {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [correo, setCorreo] = useState('');
   const [rol, setRol] = useState('');
+  const { t } = useAjustes();
 
   useEffect(() => {
     cargarDatos();
@@ -32,12 +35,12 @@ export default function PerfilScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Cerrar Sesión',
+      t('cerrarSesion'),
       '¿Estás seguro de que quieres cerrar sesión?',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Cerrar Sesión',
+          text: t('cerrarSesion'),
           style: 'destructive',
           onPress: async () => {
             await logout();
@@ -51,7 +54,7 @@ export default function PerfilScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mi Perfil</Text>
+        <Text style={styles.title}>{t('miPerfil')}</Text>
       </View>
 
       <View style={styles.profileCard}>
@@ -66,37 +69,27 @@ export default function PerfilScreen() {
 
         <View style={styles.roleBadge}>
           <Text style={styles.roleText}>
-            {rol === 'Admin' ? '👑 Administrador' : '🧳 Viajero'}
+            {rol === 'Admin' ? <><FontAwesome5 name="crown" size={12} color="#0033A0" /> {t('administrador')}</> : <><FontAwesome5 name="suitcase" size={12} color="#0033A0" /> {t('viajero')}</>}
           </Text>
         </View>
       </View>
 
       <View style={styles.optionsContainer}>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionIcon}>❤️</Text>
-          <Text style={styles.optionText}>Mis Favoritos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionIcon}>🗺️</Text>
-          <Text style={styles.optionText}>Mi Ruta</Text>
-        </TouchableOpacity>
-
         {rol === 'Admin' && (
           <TouchableOpacity style={styles.option}>
-            <Text style={styles.optionIcon}>⚙️</Text>
-            <Text style={styles.optionText}>Panel de Admin</Text>
+            <FontAwesome5 name="cog" size={24} color="#FFFFFF" style={styles.optionIcon} />
+            <Text style={styles.optionText}>{t('panelAdmin')}</Text>
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionIcon}>ℹ️</Text>
-          <Text style={styles.optionText}>Acerca de GeoVibes</Text>
+        <TouchableOpacity style={styles.option} onPress={() => router.push('/ajustes')}>
+          <FontAwesome5 name="cog" size={24} color="#FFFFFF" style={styles.optionIcon} />
+          <Text style={styles.optionText}>{t('ajustes')}</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>🚪 Cerrar Sesión</Text>
+        <Text style={styles.logoutText}><FontAwesome5 name="sign-out-alt" size={18} color="#FFFFFF" /> {t('cerrarSesion')}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

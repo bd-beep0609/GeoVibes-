@@ -9,12 +9,17 @@ import {
   Image,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect, router } from 'expo-router';
 import { getRuta, eliminarVisita, RutaItem } from '../../services/ruta';
+import { useAjustes } from '../../context/AjustesContext';
+import { traducir } from '../../constants/traduccionesContenido';
 
 export default function MiRutaScreen() {
   const [ruta, setRuta] = useState<RutaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t, idioma } = useAjustes();
 
   useFocusEffect(
     useCallback(() => {
@@ -69,12 +74,12 @@ export default function MiRutaScreen() {
       />
 
       <View style={styles.cardInfo}>
-        <Text style={styles.countryName}>{item.paisNombre}</Text>
+        <Text style={styles.countryName}>{traducir(item.paisNombre, idioma)}</Text>
         {item.paisCapital ? (
-          <Text style={styles.capitalText}>🏛️ {item.paisCapital}</Text>
+          <Text style={styles.capitalText}><FontAwesome5 name="landmark" size={12} color="#444" /> {traducir(item.paisCapital, idioma)}</Text>
         ) : null}
         <Text style={styles.dateText}>
-          📅 {new Date(item.fechaVisita).toLocaleDateString()}
+          <FontAwesome5 name="calendar-alt" size={12} color="#666666" /> {new Date(item.fechaVisita).toLocaleDateString()}
         </Text>
       </View>
 
@@ -82,19 +87,19 @@ export default function MiRutaScreen() {
         style={styles.deleteButton}
         onPress={() => handleEliminar(item.paisId, item.paisNombre)}
       >
-        <Text style={styles.deleteButtonText}>🗑️</Text>
+        <FontAwesome5 name="trash-alt" size={18} color="#FF3B30" style={styles.deleteButtonText} />
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mi Ruta</Text>
+        <Text style={styles.title}>{t('miRuta')}</Text>
         <Text style={styles.subtitle}>
           {ruta.length > 0
             ? `${ruta.length} destino${ruta.length > 1 ? 's' : ''} planeado${ruta.length > 1 ? 's' : ''}`
-            : 'Tus próximos destinos'}
+            : t('noRuta')}
         </Text>
       </View>
 
@@ -103,16 +108,16 @@ export default function MiRutaScreen() {
           <ActivityIndicator size="large" color="#FFD700" style={styles.loader} />
         ) : ruta.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyEmoji}>🗺️</Text>
-            <Text style={styles.emptyTitle}>Ruta vacía</Text>
+            <FontAwesome5 name="map-marked-alt" size={70} color="#666" style={styles.emptyEmoji} />
+            <Text style={styles.emptyTitle}>{t('miRuta')}</Text>
             <Text style={styles.emptyText}>
-              Explora países y agrégalos a tu ruta para planear tu próximo viaje.
+              {t('exploraPaisesRuta')}
             </Text>
             <TouchableOpacity
               style={styles.exploreButton}
               onPress={() => router.push('/(tabs)/home')}
             >
-              <Text style={styles.exploreButtonText}>Explorar países</Text>
+              <Text style={styles.exploreButtonText}>{t('explorar')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -125,7 +130,7 @@ export default function MiRutaScreen() {
           />
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
