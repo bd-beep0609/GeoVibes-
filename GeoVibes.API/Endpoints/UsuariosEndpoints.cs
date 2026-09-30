@@ -94,6 +94,57 @@ public static class UsuariosEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status404NotFound);
+        // PUT /api/usuarios/{id} — Actualizar perfil
+        group.MapPut("/{id:int}", async (
+            int id,
+            [FromBody] ActualizarPerfilRequest request,
+            IUsuarioService usuarioService) =>
+        {
+            if (string.IsNullOrWhiteSpace(request.NombreCompleto) || 
+                string.IsNullOrWhiteSpace(request.Correo) || 
+                string.IsNullOrWhiteSpace(request.PaisOrigen))
+            {
+                return Results.BadRequest(new { mensaje = "Todos los campos son requeridos." });
+            }
+
+            var resultado = await usuarioService.ActualizarPerfilAsync(id, request);
+            if (!resultado)
+                return Results.BadRequest(new { mensaje = "No se pudo actualizar el perfil. Verifique que el correo no esté en uso por otra cuenta." });
+
+            return Results.Ok(new { mensaje = "Perfil actualizado exitosamente." });
+        })
+        .WithSummary("Actualizar perfil")
+        .WithDescription("Actualiza los datos básicos del usuario.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .RequireAuthorization();
+
+        // PUT /api/usuarios/{id}/password — Cambiar contraseña
+        group.MapPut("/{id:int}/password", async (
+            int id,
+            [FromBody] CambiarPasswordRequest request,
+            IUsuarioService usuarioService) =>
+        {
+            if (string.IsNullOrWhiteSpace(request.PasswordActual) || 
+                string.IsNullOrWhiteSpace(request.PasswordNueva))
+            {
+                return Results.BadRequest(new { mensaje = "Ambas contraseñas son requeridas." });
+            }
+
+            if (request.PasswordNueva.Length < 6)
+                return Results.BadRequest(new { mensaje = "La nueva contraseña debe tener al menos 6 caracteres." });
+
+            var resultado = await usuarioService.CambiarPasswordAsync(id, request);
+            if (!resultado)
+                return Results.BadRequest(new { mensaje = "La contraseña actual es incorrecta o el usuario no existe." });
+
+            return Results.Ok(new { mensaje = "Contraseña cambiada exitosamente." });
+        })
+        .WithSummary("Cambiar contraseña")
+        .WithDescription("Cambia la contraseña actual de un usuario por una nueva.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .RequireAuthorization();
     }
 }
 

@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../services/auth';
@@ -17,20 +18,25 @@ export default function PerfilScreen() {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [correo, setCorreo] = useState('');
   const [rol, setRol] = useState('');
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const { t } = useAjustes();
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      cargarDatos();
+    }, [])
+  );
 
   const cargarDatos = async () => {
     const nombre = await AsyncStorage.getItem('nombreCompleto');
     const email = await AsyncStorage.getItem('correo');
     const role = await AsyncStorage.getItem('rol');
+    const avatar = await AsyncStorage.getItem('avatarUri');
 
     setNombreCompleto(nombre || 'Usuario');
     setCorreo(email || 'correo@geovibes.com');
     setRol(role || 'Usuario');
+    setAvatarUri(avatar);
   };
 
   const handleLogout = () => {
@@ -59,9 +65,13 @@ export default function PerfilScreen() {
 
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {nombreCompleto.charAt(0).toUpperCase()}
-          </Text>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>
+              {nombreCompleto.charAt(0).toUpperCase()}
+            </Text>
+          )}
         </View>
 
         <Text style={styles.name}>{nombreCompleto}</Text>
@@ -75,6 +85,10 @@ export default function PerfilScreen() {
       </View>
 
       <View style={styles.optionsContainer}>
+        <TouchableOpacity style={styles.option} onPress={() => router.push('/editar-perfil')}>
+          <FontAwesome5 name="user-edit" size={24} color="#FFFFFF" style={styles.optionIcon} />
+          <Text style={styles.optionText}>Editar Perfil</Text>
+        </TouchableOpacity>
         {rol === 'Admin' && (
           <TouchableOpacity style={styles.option}>
             <FontAwesome5 name="cog" size={24} color="#FFFFFF" style={styles.optionIcon} />
@@ -125,6 +139,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontSize: 36,
