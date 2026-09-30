@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = 'https://geovibes-api.onrender.com';
 
@@ -10,14 +10,12 @@ const api = axios.create({
   },
 });
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 api.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('token');
+  const token = await AsyncStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   try {
     const prefs = await AsyncStorage.getItem('ajustes');
     if (prefs) {
@@ -29,7 +27,7 @@ api.interceptors.request.use(async (config) => {
   } catch (e) {
     // ignorar error de lectura
   }
-  
+
   return config;
 });
 
