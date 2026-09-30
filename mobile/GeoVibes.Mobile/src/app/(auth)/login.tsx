@@ -7,18 +7,22 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Alert,
   ActivityIndicator
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { login } from '../../services/auth';
+import { useAjustes } from '../../context/AjustesContext';
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { t } = useAjustes();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -44,23 +48,26 @@ export default function LoginScreen() {
         style={styles.content}
       >
         <View style={styles.header}>
-          <Text style={styles.emojiRow}>🐦 🌸</Text>
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 8 }}>
+            <FontAwesome5 name="dove" size={32} color="#FFFFFF" />
+            <FontAwesome5 name="spa" size={32} color="#FFFFFF" />
+          </View>
           <Text style={styles.countryText}>EL SALVADOR</Text>
         </View>
 
         <View style={styles.titleContainer}>
-          <Text style={styles.titleWelcome}>Bienvenido</Text>
+          <Text style={styles.titleWelcome}>{t('bienvenido')}</Text>
           <Text style={styles.titleVibes}>vibes</Text>
         </View>
 
-        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        <Text style={styles.subtitle}>{t('iniciaSesion')}</Text>
 
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>✉️</Text>
+            <FontAwesome5 name="envelope" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Correo electrónico"
+              placeholder={t('correo')}
               placeholderTextColor="#666"
               keyboardType="email-address"
               autoCapitalize="none"
@@ -70,15 +77,18 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>🔒</Text>
+            <FontAwesome5 name="lock" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Contraseña"
+              placeholder={t('contrasena')}
               placeholderTextColor="#666"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
             />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 10 }}>
+              <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="#666" />
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
@@ -89,14 +99,13 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color="#0033A0" />
             ) : (
-              <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+              <Text style={styles.loginButtonText}>{t('iniciarSesion')}</Text>
             )}
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.registerLinkContainer} onPress={() => router.push('/(auth)/registro')}>
-          <Text style={styles.registerText}>¿No tienes cuenta? </Text>
-          <Text style={styles.registerLink}>Regístrate</Text>
+          <Text style={styles.registerText}>{t('noTienesCuenta')} </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>

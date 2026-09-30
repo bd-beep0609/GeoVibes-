@@ -7,20 +7,24 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   ActivityIndicator
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { getPaises } from '../../services/paises';
 import { Pais } from '../../types/Pais';
+import { useAjustes } from '../../context/AjustesContext';
+import { traducir } from '../../constants/traduccionesContenido';
 
-const REGIONS = ['Todos', 'Norteamérica', 'Centroamérica', 'Sudamérica', 'Caribe'];
+const REGIONS = ['todos', 'norteamerica', 'centroamerica', 'sudamerica', 'caribe'];
 
 export default function HomeScreen() {
+  const { t, idioma } = useAjustes();
   const [paises, setPaises] = useState<Pais[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('Todos');
+  const [selectedRegion, setSelectedRegion] = useState('todos');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,12 +32,16 @@ export default function HomeScreen() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search, selectedRegion]);
+  }, [search, selectedRegion, idioma]);
 
   const fetchPaises = async () => {
     setLoading(true);
     try {
-      const data = await getPaises(selectedRegion, search);
+      const regionForApi = selectedRegion === 'todos' ? 'Todos' :
+        selectedRegion === 'norteamerica' ? 'Norteamérica' :
+          selectedRegion === 'centroamerica' ? 'Centroamérica' :
+            selectedRegion === 'sudamerica' ? 'Sudamérica' : 'Caribe';
+      const data = await getPaises(regionForApi, search);
       setPaises(data);
     } catch (error) {
       console.error('Error fetching paises:', error);
@@ -53,23 +61,23 @@ export default function HomeScreen() {
         resizeMode="cover"
       />
       <View style={styles.cardContent}>
-        <Text style={styles.countryName}>{item.nombre}</Text>
-        <Text style={styles.countryRegion}>{item.region}</Text>
+        <Text style={styles.countryName}>{traducir(item.nombre, idioma)}</Text>
+        <Text style={styles.countryRegion}>{traducir(item.region, idioma)}</Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Explorar</Text>
-        <Text style={styles.subtitle}>Encuentra tu próximo destino</Text>
+        <Text style={styles.title}>{t('explorar')}</Text>
+        <Text style={styles.subtitle}>{t('encuentraDestino')}</Text>
 
         <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <FontAwesome5 name="search" size={18} color="#666" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar país..."
+            placeholder={t('buscarPais')}
             placeholderTextColor="#666"
             value={search}
             onChangeText={setSearch}
@@ -94,7 +102,7 @@ export default function HomeScreen() {
                   styles.filterText,
                   selectedRegion === item && styles.filterTextActive
                 ]}>
-                  {item}
+                  {t(item)}
                 </Text>
               </TouchableOpacity>
             )}
@@ -193,7 +201,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 15,
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   columnWrapper: {
     justifyContent: 'space-between',
