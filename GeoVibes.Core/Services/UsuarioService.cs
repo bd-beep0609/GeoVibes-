@@ -111,6 +111,48 @@ public class UsuarioService : IUsuarioService
         return true;
     }
 
+    public async Task<bool> ActualizarPerfilAsync(int usuarioId, ActualizarPerfilRequest request)
+    {
+        var usuario = await _usuarioRepository.GetByIdAsync(usuarioId);
+        if (usuario is null || !usuario.Activo)
+            return false;
+
+        // Optionally, check if the new email is already taken by another user
+        if (usuario.Correo != request.Correo)
+        {
+            var emailExists = await _usuarioRepository.GetByEmailAsync(request.Correo);
+            if (emailExists is not null)
+                return false;
+        }
+
+        usuario.NombreCompleto = request.NombreCompleto;
+        usuario.Correo = request.Correo;
+        usuario.PaisOrigen = request.PaisOrigen;
+
+        _usuarioRepository.Update(usuario);
+        await _usuarioRepository.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> CambiarPasswordAsync(int usuarioId, CambiarPasswordRequest request)
+    {
+        var usuario = await _usuarioRepository.GetByIdAsync(usuarioId);
+        if (usuario is null || !usuario.Activo)
+            return false;
+
+        bool passwordValida = BCrypt.Net.BCrypt.Verify(request.PasswordActual, usuario.PasswordHash);
+        if (!passwordValida)
+            return false;
+
+        usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordNueva);
+
+        _usuarioRepository.Update(usuario);
+        await _usuarioRepository.SaveChangesAsync();
+
+        return true;
+    }
+
     // ─── Método privado para generar JWT ─────────────────────────────────────
     private string GenerarToken(Usuario usuario)
     {
